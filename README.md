@@ -1,45 +1,28 @@
-```markdown
 # node-kafka-consumer
 
-**A standard software project.**
+Consumidor Kafka em Node.js/TypeScript (kafkajs) com um servidor Express mínimo.
 
-## Installation
+## Instalação
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-username/node-kafka-consumer.git
-    cd node-kafka-consumer
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-
-3.  **Configure Docker:**
-    ```bash
-    docker-compose up -d
-    ```
-
-## Usage
-
-*   **Kafka Configuration:**  The project utilizes a standard Kafka configuration for the consumer.  You'll need to update the `kafka.yaml` file to match your Kafka cluster details.  Ensure the `kafka.yaml` is in the `config/` directory.
-*   **Data Processing:** The `src/processor.ts` file contains the core logic for processing Kafka messages.  Modify this file to handle your specific data transformations.
-*   **Testing:**  Run the tests defined in `test/test.ts` to verify functionality.
-*   **Usage:**  Deploy the application using the `docker-compose.yml` file.
-*   **Documentation:** Refer to the `readme.md` file for detailed instructions and information on usage.
-
-## Files
-
-*   `.eslintrc.js`:  Configuration for ESLint.
-*   `.gitignore`:  Standard Git ignore file.
-*   `.prettierrc`:  Configuration for Prettier.
-*   `.vscode`:  VS Code settings.
-*   docker-compose.yml:  Docker Compose file for deployment.
-*   package.json:  Project metadata and dependencies.
-*   readme.md:  Project documentation.
-*   src:  Contains the main application logic.
-*   tsconfig.build.json: TypeScript compilation settings.
-*   tsconfig.json: TypeScript compilation settings.
-*   yarn.lock:  Version control for dependencies.
+```bash
+yarn install
 ```
+
+## Uso
+
+1. Suba o Kafka local (Zookeeper + broker, tópico `topic-test` criado automaticamente):
+   ```bash
+   export HOST_IP=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+   docker-compose up
+   ```
+2. Ajuste os brokers em `src/configs/index.ts`.
+3. Variáveis de ambiente podem ser carregadas de `envs/.env-<NODE_ENV>` (veja `src/tools/envs.tools.ts`); `PORT` (padrão 9000) define a porta HTTP e `KAFKA_TOPIC` (padrão `topic-test`) o tópico consumido.
+4. O consumidor está em `src/consumer/index.ts`: chame `ConsumerKafka.getInstance().start()` para conectar, assinar o tópico e iniciar o consumo. A lógica por mensagem fica em `eachMessage`.
+
+## Estrutura
+
+- `src/index.ts`: ponto de entrada (carrega envs e sobe o servidor).
+- `src/server.ts` e `src/api/`: API HTTP (Express).
+- `src/consumer/`: consumidor Kafka.
+- `src/configs/`: configuração do Kafka.
+- `docker-compose.yml`: Kafka local para desenvolvimento.
